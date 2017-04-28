@@ -22,19 +22,18 @@ namespace WebStart
         int completion = 0;
         int query_counter = 0;
 
-        string[] sqlArray = new string[2] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360"};
-        //string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" };
+        //string[] sqlArray = new string[2] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360"};
+        string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" };
 
         public WebForm1()
         {
-            
+            this.AsyncMode = true;
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             ExportBt.Visible = false;
-            this.AsyncMode = true;
-
+            
             InitializeBackgroundWorker();
         }
 
@@ -50,7 +49,7 @@ namespace WebStart
 
         protected void GenesysValuationsRequestBt_Click(object sender, EventArgs e)
         {
-
+            //string script = "$(document).ready(function () { $('[id*=btnSubmit]').click(); });";
             QueryArray(query_counter);
 
         }
@@ -69,6 +68,7 @@ namespace WebStart
                     ValuationsView.DataBind();
                 }
                 DbCounter.Text = "Done!";
+                ExportBt.Visible = true;
             }
         }
 
@@ -76,6 +76,7 @@ namespace WebStart
         {
             try
             {
+                //this.bg.RunWorkerAsync();
                 SqlConnection conn = new SqlConnection(strConnection);
                 //conn.Open();
 
@@ -122,7 +123,7 @@ namespace WebStart
         private void bg_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             DbCounter.Text = "" + e.ProgressPercentage;
-            progressbar.Style.Add("width", (e.ProgressPercentage * 10) + "px");
+            progressbar.Style.Add("width", (e.ProgressPercentage * (100/sqlArray.Length)) + "px");
         }
 
         protected void OnPageIndexChanging(object sender, GridViewPageEventArgs e)
