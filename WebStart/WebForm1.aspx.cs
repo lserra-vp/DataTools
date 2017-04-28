@@ -77,23 +77,24 @@ namespace WebStart
             try
             {
                 SqlConnection conn = new SqlConnection(strConnection);
-                conn.Open();
+                //conn.Open();
 
-                SqlDataAdapter sqlDA;
+                SqlDataAdapter sqlDA = new SqlDataAdapter(sqlArray[counter], conn);
                 
 
                 completion++;
 
                 UpdateProgressBar(completion);
 
-                sqlDA = new SqlDataAdapter(sqlArray[counter], conn);
                 sqlDA.SelectCommand.CommandTimeout = 600;
 
                 sqlDA.Fill(ds);
 
-                conn.Close();
+                //conn.Close();
 
                 query_counter++;
+
+                NextQuery();
             }
             catch(Exception ex)
             {
