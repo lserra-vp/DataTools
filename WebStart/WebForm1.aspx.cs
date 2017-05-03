@@ -15,7 +15,12 @@ namespace WebStart
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
-        String strConnection = "Data Source=vpro-sql1;Initial Catalog=RE_INT_IE_DataQuality;Integrated Security=True";
+        String strConnectionMain = "Data Source=vpro-sql1;Initial Catalog=CapacityPlanning;Integrated Security=True";
+        String sqlMainCommand = "SELECT * FROM KeyValuationActual";
+
+
+        String strConnectionUpdates = "Data Source=vpro-sql1;Initial Catalog=RE_INT_IE_DataQuality;Integrated Security=True";
+
         BackgroundWorker bg = new BackgroundWorker();
         DataSet ds = new DataSet();
 
@@ -33,8 +38,19 @@ namespace WebStart
         protected void Page_Load(object sender, EventArgs e)
         {
             ExportBt.Visible = false;
-            
-            InitializeBackgroundWorker();
+            //ClientScriptManager.RegisterClientScriptBlock(GetType(), "ModalDoneButton", "myFunction();", true);
+
+            //InitializeBackgroundWorker();
+        }
+
+        protected void ShowWaitModal()
+        {
+
+        }
+
+        protected void HideWaitModal()
+        {
+
         }
 
         private void InitializeBackgroundWorker()
@@ -49,8 +65,13 @@ namespace WebStart
 
         protected void GenesysValuationsRequestBt_Click(object sender, EventArgs e)
         {
-            //string script = "$(document).ready(function () { $('[id*=btnSubmit]').click(); });";
-            QueryArray(query_counter);
+            ShowWaitModal();
+            //QueryMainTable();
+            //QueryArray(query_counter);
+        }
+
+        protected void CreatewaitLoadingModalDiv()
+        {
 
         }
 
@@ -67,8 +88,35 @@ namespace WebStart
                     ValuationsView.DataSource = ds;
                     ValuationsView.DataBind();
                 }
-                DbCounter.Text = "Done!";
+
                 ExportBt.Visible = true;
+                
+                //LoadingDoneButton.Visible = true;
+                HideWaitModal();
+            }
+        }
+
+        private void QueryMainTable()
+        {
+            try
+            {
+                QueryMessage.InnerText = "Fetching Existing Data";
+
+                SqlConnection conn = new SqlConnection(strConnectionMain);
+
+                SqlDataAdapter sqlDA = new SqlDataAdapter(sqlMainCommand, conn);
+
+                
+
+                sqlDA.SelectCommand.CommandTimeout = 600;
+
+                sqlDA.Fill(ds);
+
+                QueryArray(query_counter);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Main Table Exception information! : {0}", ex);
             }
         }
 
@@ -76,8 +124,10 @@ namespace WebStart
         {
             try
             {
+                QueryMessage.InnerText = "Fetching New Data";
+                
                 //this.bg.RunWorkerAsync();
-                SqlConnection conn = new SqlConnection(strConnection);
+                SqlConnection conn = new SqlConnection(strConnectionUpdates);
                 //conn.Open();
 
                 SqlDataAdapter sqlDA = new SqlDataAdapter(sqlArray[counter], conn);
@@ -91,23 +141,21 @@ namespace WebStart
 
                 sqlDA.Fill(ds);
 
-                //conn.Close();
-
                 query_counter++;
 
                 NextQuery();
             }
             catch(Exception ex)
             {
-                Console.WriteLine("Excaption information! : {0}", ex);
+                Console.WriteLine("Update Views Exception information! : {0}", ex);
             }
 
         }
 
         private void UpdateProgressBar(int completion)
         {
-            DbCounter.Text = "" + completion;
-            progressbar.Style.Add("width", (completion * 10) + "px");
+
+            FillBar.Style.Add("width", (completion * 10) + "px");
         }
 
         protected void bg_DoWork(object sender, DoWorkEventArgs e)
@@ -122,8 +170,7 @@ namespace WebStart
 
         private void bg_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            DbCounter.Text = "" + e.ProgressPercentage;
-            progressbar.Style.Add("width", (e.ProgressPercentage * (100/sqlArray.Length)) + "px");
+            FillBar.Style.Add("width", (e.ProgressPercentage * (100/sqlArray.Length)) + "px");
         }
 
         protected void OnPageIndexChanging(object sender, GridViewPageEventArgs e)
@@ -135,7 +182,7 @@ namespace WebStart
         {
             Response.Clear();
             Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=ValuationsExport.xls");
+            Response.AddHeader("content-disposition", "attachment;filename=valuations_"+DateTime.Today.ToString("d").Replace("/","")+".xls");
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
 

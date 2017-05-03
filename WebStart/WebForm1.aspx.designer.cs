@@ -28,25 +28,16 @@ namespace WebStart {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button GenesysValuationsRequestBt;
+        protected global::System.Web.UI.HtmlControls.HtmlButton GenesysValuationsRequestBt;
         
         /// <summary>
-        /// progressbar control.
+        /// ExportBt control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl progressbar;
-        
-        /// <summary>
-        /// DbCounter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DbCounter;
+        protected global::System.Web.UI.HtmlControls.HtmlButton ExportBt;
         
         /// <summary>
         /// ValuationsView control.
@@ -58,12 +49,39 @@ namespace WebStart {
         protected global::System.Web.UI.WebControls.GridView ValuationsView;
         
         /// <summary>
-        /// ExportBt control.
+        /// QueryMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ExportBt;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl QueryMessage;
+        
+        /// <summary>
+        /// FillBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl FillBar;
+        
+        /// <summary>
+        /// Hourglass control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlImage Hourglass;
+        
+        /// <summary>
+        /// loadingdonebutton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlButton loadingdonebutton;
     }
 }
