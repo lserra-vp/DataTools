@@ -6,52 +6,36 @@
     background: #FFFFFF;
 }
 
+.ValuationsView {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+}
+
 .modal {
-    display: none;
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     background-color: black;
     z-index: 99;
     opacity: 0.8;
     filter: alpha(opacity=80);
+    -moz-opacity: 0.8;
     min-height: 100%;
     width: 100%;
 }
 
-.ProgressBar {
-    margin: auto;
-    text-align: center;
-}
-
-.hourglass {
-    display: block;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.LoadingModal {
-    display:none;
+.loading {
     font-family: Arial;
     font-size: 10pt;
     border: 5px solid #67CFF5;
     width: 200px;
-    min-width: 200px;
     height: 200px;
+    display: none;
     position: fixed;
     background-color: White;
     z-index: 999;
 }
 
-.NoInteraction {
-    position: absolute;
-    display: none;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: green;
-    opacity: 0.2;
-}
-
-.loadingdonebutton {
-    display: none;
-}
+.

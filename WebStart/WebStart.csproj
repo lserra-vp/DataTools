@@ -76,10 +76,7 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="img\ajax-loader-small.gif" />
-    <Content Include="img\animal.gif" />
     <Content Include="img\button_wfm-genesys.png" />
-    <Content Include="img\hourglass.gif" />
-    <Content Include="img\hourglass.svg" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
