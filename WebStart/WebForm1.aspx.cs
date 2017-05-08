@@ -10,6 +10,7 @@ using System.Configuration;
 using System.IO;
 using System.Drawing;
 using System.ComponentModel;
+using System.Threading;
 
 namespace WebStart
 {
@@ -27,8 +28,8 @@ namespace WebStart
         int completion = 0;
         int query_counter = 0;
 
-        //string[] sqlArray = new string[2] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360"};
-        string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" };
+        string[] sqlArray = new string[2] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360"};
+        //string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" };
 
         public WebForm1()
         {
@@ -37,37 +38,34 @@ namespace WebStart
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            ExportBt.Visible = false;
-            //ClientScriptManager.RegisterClientScriptBlock(GetType(), "ModalDoneButton", "myFunction();", true);
 
-            //InitializeBackgroundWorker();
+            GenesysValuationsExportBt.Visible = false;
+
+            InitializeElements();
+            
         }
 
-        protected void ShowWaitModal()
+        protected void InitializeElements()
         {
+            Message.InnerHtml = "Idle...";
 
+            GenesysValuationsRequestBt.Click += new EventHandler(this.GenesysValuationsRequestBt_Click);
+            GenesysValuationsExportBt.Click += new EventHandler(this.ExportToExcel_click);
         }
 
-        protected void HideWaitModal()
+        private void CallWaitTimer(object sender, EventArgs e)
         {
-
-        }
-
-        private void InitializeBackgroundWorker()
-        {
-            bg.DoWork += new DoWorkEventHandler(bg_DoWork);
-            //bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bg_Completed);
-            bg.ProgressChanged += new ProgressChangedEventHandler(bg_ProgressChanged);
-
-            this.bg.WorkerReportsProgress = true;
-            this.bg.WorkerSupportsCancellation = true;
+            NextQuery();
         }
 
         protected void GenesysValuationsRequestBt_Click(object sender, EventArgs e)
         {
-            ShowWaitModal();
-            //QueryMainTable();
-            //QueryArray(query_counter);
+            Message.InnerHtml = "";
+
+            //waitTimer.Start();
+            Thread.Sleep(500);
+
+            QueryArray(query_counter);
         }
 
         protected void CreatewaitLoadingModalDiv()
@@ -75,11 +73,16 @@ namespace WebStart
 
         }
 
-        private void NextQuery()
+        protected void NextQuery()
         {
             if (query_counter < sqlArray.Length)
             {
+                UpdateProgressBar(completion);
+
+                Thread.Sleep(500);
+
                 QueryArray(query_counter);
+                
             }
             else
             {
@@ -89,10 +92,10 @@ namespace WebStart
                     ValuationsView.DataBind();
                 }
 
-                ExportBt.Visible = true;
+                GenesysValuationsExportBt.Visible = true;
                 
+                Message.InnerHtml = "";
                 //LoadingDoneButton.Visible = true;
-                HideWaitModal();
             }
         }
 
@@ -100,13 +103,10 @@ namespace WebStart
         {
             try
             {
-                QueryMessage.InnerText = "Fetching Existing Data";
 
                 SqlConnection conn = new SqlConnection(strConnectionMain);
 
                 SqlDataAdapter sqlDA = new SqlDataAdapter(sqlMainCommand, conn);
-
-                
 
                 sqlDA.SelectCommand.CommandTimeout = 600;
 
@@ -124,18 +124,13 @@ namespace WebStart
         {
             try
             {
-                QueryMessage.InnerText = "Fetching New Data";
                 
-                //this.bg.RunWorkerAsync();
                 SqlConnection conn = new SqlConnection(strConnectionUpdates);
-                //conn.Open();
 
                 SqlDataAdapter sqlDA = new SqlDataAdapter(sqlArray[counter], conn);
                 
-
                 completion++;
 
-                UpdateProgressBar(completion);
 
                 sqlDA.SelectCommand.CommandTimeout = 600;
 
@@ -156,21 +151,6 @@ namespace WebStart
         {
 
             FillBar.Style.Add("width", (completion * 10) + "px");
-        }
-
-        protected void bg_DoWork(object sender, DoWorkEventArgs e)
-        {
-            
-
-            // Get the BackgroundWorker that raised this event.
-            BackgroundWorker worker = sender as BackgroundWorker;
-
-            
-        }
-
-        private void bg_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            FillBar.Style.Add("width", (e.ProgressPercentage * (100/sqlArray.Length)) + "px");
         }
 
         protected void OnPageIndexChanging(object sender, GridViewPageEventArgs e)

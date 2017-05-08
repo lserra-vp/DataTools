@@ -13,13 +13,13 @@ namespace WebStart {
     public partial class WebForm1 {
         
         /// <summary>
-        /// form1 control.
+        /// results control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.HtmlControls.HtmlForm results;
         
         /// <summary>
         /// GenesysValuationsRequestBt control.
@@ -28,16 +28,16 @@ namespace WebStart {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton GenesysValuationsRequestBt;
+        protected global::System.Web.UI.WebControls.Button GenesysValuationsRequestBt;
         
         /// <summary>
-        /// ExportBt control.
+        /// GenesysValuationsExportBt control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton ExportBt;
+        protected global::System.Web.UI.WebControls.Button GenesysValuationsExportBt;
         
         /// <summary>
         /// ValuationsView control.
@@ -49,13 +49,31 @@ namespace WebStart {
         protected global::System.Web.UI.WebControls.GridView ValuationsView;
         
         /// <summary>
-        /// QueryMessage control.
+        /// no_interaction control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl QueryMessage;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl no_interaction;
+        
+        /// <summary>
+        /// loading_modal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl loading_modal;
+        
+        /// <summary>
+        /// query_message control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl query_message;
         
         /// <summary>
         /// FillBar control.
@@ -67,21 +85,30 @@ namespace WebStart {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl FillBar;
         
         /// <summary>
-        /// Hourglass control.
+        /// hourglass control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlImage Hourglass;
+        protected global::System.Web.UI.HtmlControls.HtmlImage hourglass;
         
         /// <summary>
-        /// loadingdonebutton control.
+        /// loading_done_button control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton loadingdonebutton;
+        protected global::System.Web.UI.HtmlControls.HtmlButton loading_done_button;
+        
+        /// <summary>
+        /// Message control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Message;
     }
 }
