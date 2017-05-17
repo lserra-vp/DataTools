@@ -22,6 +22,15 @@ namespace WebStart {
         protected global::System.Web.UI.HtmlControls.HtmlForm results;
         
         /// <summary>
+        /// CustomSqlQueryBt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button CustomSqlQueryBt;
+        
+        /// <summary>
         /// GenesysValuationsRequestBt control.
         /// </summary>
         /// <remarks>
@@ -40,6 +49,15 @@ namespace WebStart {
         protected global::System.Web.UI.WebControls.Button GenesysValuationsExportBt;
         
         /// <summary>
+        /// Message control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Message;
+        
+        /// <summary>
         /// ValuationsView control.
         /// </summary>
         /// <remarks>
@@ -47,6 +65,60 @@ namespace WebStart {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView ValuationsView;
+        
+        /// <summary>
+        /// UserSqlQuery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl UserSqlQuery;
+        
+        /// <summary>
+        /// DatabaseList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DatabaseList;
+        
+        /// <summary>
+        /// Sqlquery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Sqlquery;
+        
+        /// <summary>
+        /// CustomQueryView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView CustomQueryView;
+        
+        /// <summary>
+        /// RunQuery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button RunQuery;
+        
+        /// <summary>
+        /// CustomQueryMessages control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label CustomQueryMessages;
         
         /// <summary>
         /// no_interaction control.
@@ -101,14 +173,5 @@ namespace WebStart {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton loading_done_button;
-        
-        /// <summary>
-        /// Message control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Message;
     }
 }

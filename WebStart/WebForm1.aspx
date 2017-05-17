@@ -12,6 +12,8 @@
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
+        var queryVisible = false;
+
         function ShowProgress() {
             console.log("ShowProgress Function");
             $('#no_interaction').show();
@@ -33,33 +35,66 @@
         $(document).ready(function () {
             $("#loading_modal").hide();
             $('#no_interaction').hide();
-
-            /*$('#GenesysValuationsRequestBt').click(function () {
-                ShowProgress();
-                return false;
-            });*/
-
-            /*$('#loading_done_button').click(function () {
-                $("#loading_modal").hide();
-                $('#no_interaction').hide();
-            });*/
+            
         });
+
+        /*function toggleCustomQuery() {
+            console.log("Custom SQL");
+
+            if (!queryVisible) {
+                queryVisible = true;
+                $("#UserSqlQuery").show();
+                $("#CustomSqlQueryBt").html("Hide Custom Query");
+            } else {
+                queryVisible = false;
+                $("#UserSqlQuery").hide();
+                $("#CustomSqlQueryBt").html("Show Custom Query");
+            }
+        };*/
+
     </script>
 </head>
 <body>
     
+
     <form id="results" runat="server">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand abs" href="#">Voxpro</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <asp:Button ID="CustomSqlQueryBt" CssClass="btn btn-default" runat="server" Text="Show Custom Query" />
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
         <div class="container-fluid col-lg-12">
-            <div class="row">
-                <asp:Button ID="GenesysValuationsRequestBt" runat="server" Text="Get Valuations" CssClass="btn btn-sm btn-danger" OnClientClick="ShowProgress();"/>
-                <asp:Button ID="GenesysValuationsExportBt" runat="server" CssClass="btn btn-sm btn-success" Text="Export To Excel"/>
-                <asp:GridView ID="ValuationsView" runat="server" Width="1500px" CssClass="table" BorderStyle="None" GridLines="None" ShowHeaderWhenEmpty="True" AlternatingRowStyle-Wrap="False" FooterStyle-Wrap="False" HeaderStyle-Wrap="False" PagerStyle-Wrap="False" SelectedRowStyle-Wrap="False" SortedAscendingCellStyle-Wrap="False" SortedAscendingHeaderStyle-Wrap="False" SortedDescendingHeaderStyle-Wrap="False">
+            <asp:Button ID="GenesysValuationsRequestBt" runat="server" Text="Get Valuations" CssClass="btn btn-sm btn-danger" OnClientClick="ShowProgress();"/>
+            <asp:Button ID="GenesysValuationsExportBt" runat="server" CssClass="btn btn-sm btn-success" Text="Export To Excel"/>
+            <div id="Message" runat="server"></div>
+            <div class="test table-responsive">
+                <asp:GridView ID="ValuationsView" runat="server" Width="1000px" Height="500px" CssClass="table table-striped table-bordered table-hover" BorderStyle="None" GridLines="None" ShowHeaderWhenEmpty="True" AlternatingRowStyle-Wrap="False" FooterStyle-Wrap="False" HeaderStyle-Wrap="False" PagerStyle-Wrap="False" SelectedRowStyle-Wrap="False" SortedAscendingCellStyle-Wrap="False" SortedAscendingHeaderStyle-Wrap="False" SortedDescendingHeaderStyle-Wrap="False">
                     <AlternatingRowStyle BackColor="#CCFFFF" Font-Bold="False" />
                     <HeaderStyle BackColor="#3399FF" Wrap="False" />
                 </asp:GridView>
             </div>
+            <div id="UserSqlQuery" runat="server">
+                <p>Custom SQL Query</p>
+                <asp:DropDownList ID="DatabaseList" runat="server"></asp:DropDownList>
+                <asp:TextBox ID="Sqlquery" style="width:100%;" runat="server" BackColor="#FFFFCC" BorderColor="Silver" BorderStyle="Solid" BorderWidth="1" Text="Type your query here..." Height="50"></asp:TextBox>
+                <div class="test table-responsive">
+                    <asp:GridView ID="CustomQueryView" runat="server" Width="1000px" Height="500px" CssClass="table table-striped table-bordered table-hover" BorderStyle="None" GridLines="None" ShowHeaderWhenEmpty="True" AlternatingRowStyle-Wrap="False" FooterStyle-Wrap="False" HeaderStyle-Wrap="False" PagerStyle-Wrap="False" SelectedRowStyle-Wrap="False" SortedAscendingCellStyle-Wrap="False" SortedAscendingHeaderStyle-Wrap="False" SortedDescendingHeaderStyle-Wrap="False">
+                        <AlternatingRowStyle BackColor="#CCFFFF" Font-Bold="False" />
+                        <HeaderStyle BackColor="#3399FF" Wrap="False" />
+                    </asp:GridView>
+                </div>
+                <asp:Button ID="RunQuery" runat="server" CssClass="btn btn-sm btn-primary" Text="Run Query" />
+                <asp:Label ID="CustomQueryMessages" runat="server" Text="" Font-Bold="True" ForeColor="#990000"></asp:Label>
+            </div>
         </div>
-        
     </form>
 
     <div id="wait">
@@ -73,6 +108,6 @@
             <button id="loading_done_button" class="btn btn-sm btn-success" runat="server" style="display:none;">Done!</button>
         </div>
     </div>
-    <div id="Message" runat="server"></div>
+    
 </body>
 </html>
