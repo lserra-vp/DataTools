@@ -13,6 +13,8 @@ using System.ComponentModel;
 using System.Threading;
 using ClosedXML.Excel;
 using OfficeOpenXml;
+using System.Text.RegularExpressions;
+//using System.Data.SqlClient;
 
 using Microsoft.SqlServer.Server;
 
@@ -30,6 +32,7 @@ namespace WebStart
 
         BackgroundWorker bg = new BackgroundWorker();
         DataSet ds;
+        //DataSet duplicatesDataSet;
 
         int completion = 0;
         int query_counter = 0;
@@ -77,12 +80,97 @@ namespace WebStart
 
             GenesysValuationsRequestBt.Click += new EventHandler(this.GenesysValuationsRequestBt_Click);
             GenesysValuationsExportBt.Click += new EventHandler(this.ExportToExcel_click);
+            GenesysCheckDuplicatesBt.Click += new EventHandler(this.CheckDuplicates_Click);
 
             CustomSqlQueryBt.Click += new EventHandler(this.ShowCustomQueryArea);
             
             RunQuery.Click += new EventHandler(this.RunCustomQuery_click);
         }
 
+        /// <summary>
+        ///  Triggered once the "Get Duplicates" button is clicked
+        ///  Deletes the copy table and copies the actual data from the original table
+        ///  Calls the method for checking duplicates
+        /// </summary>
+        private void CheckDuplicates_Click(object sender, EventArgs e)
+        {
+            DeleteDataCopyTable();
+
+            Message.InnerHtml = "Copying existing data";
+
+            Thread.Sleep(500);
+
+            //Copy existing table data to copy database
+            CopyExistingDatabase();
+
+            CheckDuplicatesGridview();
+        }
+
+        /// <summary>
+        ///  Queries the table and send results to gridview
+        /// </summary>
+        private void CheckDuplicatesGridview()
+        {
+            SqlConnection conn = new SqlConnection(strConnectionForUpdates);
+            SqlCommand cmd = new SqlCommand("SELECT ValuationID, COUNT(*) as [Duplicates] FROM KeyValuationActual_destination GROUP BY ValuationID HAVING COUNT(*) > 1", conn);
+
+            try
+            {
+                conn.Open();
+
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = cmd;
+
+                DataSet duplicates = new DataSet();
+
+                da.Fill(duplicates);
+
+                if (duplicates.Tables.Count > 0)//Checks if the DataSource is not empty
+                {
+                    ValuationsView.DataSource = duplicates; //Sets the GridView Datasource with the queried table datasource
+                    ValuationsView.DataBind(); //Binds the DataSource with the visualGrid object
+                }
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                CustomQueryMessages.Text = (ex.Message);
+            }
+
+        }
+
+        private DataTable CheckDuplicatesToDelete()
+        {
+            SqlConnection conn = new SqlConnection(strConnectionForUpdates);
+            SqlCommand cmd = new SqlCommand("SELECT ValuationID, COUNT(*) as [Duplicates] FROM KeyValuationActual_destination GROUP BY ValuationID HAVING COUNT(*) > 1", conn);
+            DataTable dt = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter();
+
+            try
+            {
+                conn.Open();
+
+                da.SelectCommand = cmd;
+
+                da.Fill(dt);
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                CustomQueryMessages.Text = (ex.Message);
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        ///  Queries the server to retrieve all databases.
+        ///  Sends result to fill the dropdown
+        /// </summary>
         private void GetInitialDatabaseListForQuery()
         {
             List<String> databaseNames = new List<String>();
@@ -104,6 +192,9 @@ namespace WebStart
             addListToDropdown(databaseNames);
         }
 
+        /// <summary>
+        ///  Populates the dropdown with the database list
+        /// </summary>
         private void addListToDropdown(List<string> list)
         {
             foreach(string name in list)
@@ -112,6 +203,9 @@ namespace WebStart
             }
         }
 
+        /// <summary>
+        ///  Shows/Hide the Custom Query area
+        /// </summary>
         private void ShowCustomQueryArea(object sender, EventArgs e)
         {
             if (!customQueryVisible)
@@ -129,6 +223,9 @@ namespace WebStart
             
         }
 
+        /// <summary>
+        ///  Starts the custom query and sends result to gridview
+        /// </summary>
         private void RunCustomQuery_click(object sender, EventArgs e)
         {
 
@@ -165,6 +262,9 @@ namespace WebStart
 
         }
 
+        /// <summary>
+        ///  Retrieves the database list on server
+        /// </summary>
         private List<string> GetDatabaseList()
         {
             List<string> list = new List<string>();
@@ -210,8 +310,14 @@ namespace WebStart
             //Copy existing table data to copy database
             CopyExistingDatabase();
 
+            //Check for duplicates and deletes them before querying for new valuations (This way, deleted rows will be included in the query)
+            CheckAndDeleteDuplicates();
+            
             //Add new valuations data
             QueryArray(query_counter);
+
+            ShowValuationsInGridView(QueryFinalTable());
+
         }
 
         /// <summary>
@@ -221,7 +327,7 @@ namespace WebStart
         {
             try
             {
-                SqlConnection source = new SqlConnection(strConnectionMain); //strConnectionMain
+                SqlConnection source = new SqlConnection(strConnectionMain); //strConnectionForUpdates
                 SqlConnection destination = new SqlConnection(strConnectionForUpdates);
 
                 source.Open();
@@ -277,6 +383,50 @@ namespace WebStart
             }
         }
 
+        private void CheckAndDeleteDuplicates()
+        {
+            DataTable dt = CheckDuplicatesToDelete();
+            SqlConnection conn = new SqlConnection(strConnectionForUpdates);
+            //SqlCommand cmd = new SqlCommand("SELECT ValuationID, COUNT(*) as [Duplicates] FROM KeyValuationActual_destination GROUP BY ValuationID HAVING COUNT(*) > 1", conn);
+
+
+            if (dt.Rows.Count > 0)
+            {
+                conn.Open();
+                foreach(DataRow row in dt.Rows)
+                {
+                    //string pattern = Regex.Escape(row["ValuationID"].ToString());
+
+                    SqlCommand cmdDelete = new SqlCommand("DELETE FROM KeyValuationActual_destination WHERE ValuationID = @pattern", conn);
+                    
+                    SqlParameter[] parameters = new SqlParameter[1];
+                    parameters[0] = new SqlParameter("@pattern", SqlDbType.VarChar, 255);
+                    parameters[0].Value = row["ValuationID"].ToString();
+
+                    cmdDelete.Parameters.AddRange(parameters);
+
+                    Console.WriteLine("{0} deleted rows",cmdDelete.ExecuteNonQuery()); //Executes the command and returs the number of rows deleted
+                }
+                conn.Close();
+            }
+        }
+
+        private int CountRowsThatMatchString(String match, String tableName, String columnName)
+        {
+            SqlConnection conn = new SqlConnection(strConnectionForUpdates);
+            SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = " + match, conn);
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable dt = new DataTable();
+
+            conn.Open();
+
+            da.Fill(dt);
+
+            conn.Close();
+
+            return dt.Rows.Count;
+        }
+
         /// <summary>
         ///  Iterates the trigering of a new SQL query travlling through the SQL command query
         /// </summary>
@@ -295,8 +445,7 @@ namespace WebStart
             {
                 if (QueryFinalTable().Tables.Count > 0)//Checks if the DataSource is not empty
                 {
-                    ValuationsView.DataSource = QueryFinalTable(); //Sets the GridView Datasource with the queried table datasource
-                    ValuationsView.DataBind(); //Binds the DataSource with the visualGrid object
+                    ShowValuationsInGridView(QueryFinalTable());
                     Message.InnerHtml = " ";
                 }
                 else
@@ -309,6 +458,14 @@ namespace WebStart
                 Message.InnerHtml = "";
             }
         }
+
+
+        private void ShowValuationsInGridView(DataSet ds)
+        {
+            ValuationsView.DataSource = ds; //Sets the GridView Datasource with the queried table datasource
+            ValuationsView.DataBind(); //Binds the DataSource with the visualGrid object
+        }
+        
 
         /// <summary>
         ///  Gets the newly added valuations rows and returns a DataSource object
@@ -391,6 +548,11 @@ namespace WebStart
             {
                 Console.WriteLine("Update Views Exception information! : {0}", ex);
             }
+
+        }
+
+        private void CompareAndGetMissingKeys()
+        {
 
         }
 

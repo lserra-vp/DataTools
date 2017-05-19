@@ -73,10 +73,11 @@
 
         <div class="container-fluid col-lg-12">
             <asp:Button ID="GenesysValuationsRequestBt" runat="server" Text="Get Valuations" CssClass="btn btn-sm btn-danger" OnClientClick="ShowProgress();"/>
-            <asp:Button ID="GenesysValuationsExportBt" runat="server" CssClass="btn btn-sm btn-success" Text="Export To Excel"/>
+            <asp:Button ID="GenesysCheckDuplicatesBt" runat="server" Text="Check Duplicates" CssClass="btn btn-sm btn-warning" OnClientClick="ShowProgress();"/>
+            <asp:Button ID="GenesysValuationsExportBt" runat="server" Text="Export To Excel" CssClass="btn btn-sm btn-success"/>
             <div id="Message" runat="server"></div>
             <div class="test table-responsive">
-                <asp:GridView ID="ValuationsView" runat="server" Width="1000px" Height="500px" CssClass="table table-striped table-bordered table-hover" BorderStyle="None" GridLines="None" ShowHeaderWhenEmpty="True" AlternatingRowStyle-Wrap="False" FooterStyle-Wrap="False" HeaderStyle-Wrap="False" PagerStyle-Wrap="False" SelectedRowStyle-Wrap="False" SortedAscendingCellStyle-Wrap="False" SortedAscendingHeaderStyle-Wrap="False" SortedDescendingHeaderStyle-Wrap="False">
+                <asp:GridView ID="ValuationsView" runat="server" Width="1000px" CssClass="table table-striped table-bordered table-hover" BorderStyle="None" GridLines="None" ShowHeaderWhenEmpty="True" AlternatingRowStyle-Wrap="False" FooterStyle-Wrap="False" HeaderStyle-Wrap="False" PagerStyle-Wrap="False" SelectedRowStyle-Wrap="False" SortedAscendingCellStyle-Wrap="False" SortedAscendingHeaderStyle-Wrap="False" SortedDescendingHeaderStyle-Wrap="False">
                     <AlternatingRowStyle BackColor="#CCFFFF" Font-Bold="False" />
                     <HeaderStyle BackColor="#3399FF" Wrap="False" />
                 </asp:GridView>
