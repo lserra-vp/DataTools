@@ -61,7 +61,7 @@
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand abs" href="#">Voxpro</a>
+                    <a class="navbar-brand abs" href="#"><img src="img/voxpro_data_logo.png" /></a>
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
@@ -74,6 +74,8 @@
         <div class="container-fluid col-lg-12">
             <asp:Button ID="GenesysValuationsRequestBt" runat="server" Text="Get Valuations" CssClass="btn btn-sm btn-danger" OnClientClick="ShowProgress();"/>
             <asp:Button ID="GenesysCheckDuplicatesBt" runat="server" Text="Check Duplicates" CssClass="btn btn-sm btn-warning" OnClientClick="ShowProgress();"/>
+            <asp:Button ID="GenesysCheckKeysBt" runat="server" Text="Check Keys" CssClass="btn btn-sm btn-warning" OnClientClick="ShowProgress();"/>
+
             <asp:Button ID="GenesysValuationsExportBt" runat="server" Text="Export To Excel" CssClass="btn btn-sm btn-success"/>
             <div id="Message" runat="server"></div>
             <div class="test table-responsive">

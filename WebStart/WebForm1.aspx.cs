@@ -13,7 +13,7 @@ using System.ComponentModel;
 using System.Threading;
 using ClosedXML.Excel;
 using OfficeOpenXml;
-using System.Text.RegularExpressions;
+
 //using System.Data.SqlClient;
 
 using Microsoft.SqlServer.Server;
@@ -28,7 +28,7 @@ namespace WebStart
         String strConnectionMain = "Data Source=vpro-sql1;Initial Catalog=CapacityPlanning;Integrated Security=True";
         String sqlMainCommand = "SELECT * FROM KeyValuationActual";
 
-        String strConnectionForUpdates = "Data Source=vpro-sql1;Initial Catalog=RE_INT_IE_DataQuality;Integrated Security=True";
+        String strConnectionForUpdates = "Data Source=vpro-sql1;Initial Catalog=RE_INT_IE_DataQuality;Integrated Security=True;MultipleActiveResultSets=True";
 
         BackgroundWorker bg = new BackgroundWorker();
         DataSet ds;
@@ -81,10 +81,43 @@ namespace WebStart
             GenesysValuationsRequestBt.Click += new EventHandler(this.GenesysValuationsRequestBt_Click);
             GenesysValuationsExportBt.Click += new EventHandler(this.ExportToExcel_click);
             GenesysCheckDuplicatesBt.Click += new EventHandler(this.CheckDuplicates_Click);
+            GenesysCheckKeysBt.Click += new EventHandler(this.CheckKeys_click);
 
             CustomSqlQueryBt.Click += new EventHandler(this.ShowCustomQueryArea);
             
             RunQuery.Click += new EventHandler(this.RunCustomQuery_click);
+        }
+
+        /// <summary>
+        ///  Check and adds missing keys to lines automatically
+        /// </summary>
+        private void CheckKeys_click(object sender, EventArgs e)
+        {
+            CheckMissingKeys(true);
+        }
+
+        private void CheckMissingKeys(bool showKeyLessResults)
+        {
+            CheckAndAddValuationKeys keys = new CheckAndAddValuationKeys(QueryFinalTable(), strConnectionForUpdates);
+
+            DataSet _keylessDataSet = new DataSet();
+            DataTable _keylessDataTable = new DataTable();
+
+            //_keylessDataTable = keys.getDataTable(); //Return rows with no key before trying to get them
+
+            keys.getMissingKeys(); //Checks for rows with missing keys and attempts to add them
+
+            _keylessDataTable = keys.getDataTable(); //Return the rows with the keys
+
+            _keylessDataSet.Tables.Add(_keylessDataTable); //Converts DataTable to DataSet
+
+            CopyNewKeysToDatabase(keys.getDataTable());
+
+            if (showKeyLessResults)
+            {
+                ShowValuationsInGridView(_keylessDataSet);
+                GenesysValuationsExportBt.Visible = true;
+            }
         }
 
         /// <summary>
@@ -310,11 +343,14 @@ namespace WebStart
             //Copy existing table data to copy database
             CopyExistingDatabase();
 
+
             //Check for duplicates and deletes them before querying for new valuations (This way, deleted rows will be included in the query)
             CheckAndDeleteDuplicates();
             
             //Add new valuations data
-            QueryArray(query_counter);
+            QueryArray();
+
+            CheckMissingKeys(false);
 
             ShowValuationsInGridView(QueryFinalTable());
 
@@ -327,7 +363,7 @@ namespace WebStart
         {
             try
             {
-                SqlConnection source = new SqlConnection(strConnectionMain); //strConnectionForUpdates
+                SqlConnection source = new SqlConnection(strConnectionForUpdates); //strConnectionForUpdatesstrConnectionMain
                 SqlConnection destination = new SqlConnection(strConnectionForUpdates);
 
                 source.Open();
@@ -438,7 +474,7 @@ namespace WebStart
 
                 Thread.Sleep(500);
 
-                QueryArray(query_counter);
+                QueryArray();
                 
             }
             else
@@ -462,6 +498,7 @@ namespace WebStart
 
         private void ShowValuationsInGridView(DataSet ds)
         {
+
             ValuationsView.DataSource = ds; //Sets the GridView Datasource with the queried table datasource
             ValuationsView.DataBind(); //Binds the DataSource with the visualGrid object
         }
@@ -473,7 +510,7 @@ namespace WebStart
         private DataSet QueryFinalTable()
         {
             SqlConnection conn = new SqlConnection(strConnectionForUpdates);
-            SqlDataAdapter sqlDA = new SqlDataAdapter("SELECT [ValuationID],[Post],[Location],[Department],[Role],[Language],[Work Group],[Shift],[Resource Utilisation Ref_ID],[Activity],[DataType],[SystemType] FROM KeyValuationActual_destination where [Unique ID] IS NULL", conn);
+            SqlDataAdapter sqlDA = new SqlDataAdapter("SELECT [ValuationID],[Post],[Location],[Department],[Role],[Language],[Work Group],[Shift],[Resource Utilisation Ref_ID],[Activity],[DataType],[SystemType], [Unique ID], [WFMTime#], [StateTime#], [ActualTime#], [WFMValuation#], [InvoiceValuation#], [ForecastTime#], [ForecastValuation#], [BillableValuationID] FROM KeyValuationActual_destination where [Unique ID] IS NULL", conn);
 
             ds = new DataSet();
 
@@ -491,6 +528,8 @@ namespace WebStart
         /// </summary>
         private void CopyNewDataToDatabase(int counter)
         {
+            completion++;
+
             try
             {
                 SqlConnection source = new SqlConnection(strConnectionForUpdates);
@@ -530,10 +569,43 @@ namespace WebStart
             }
         }
 
+        public void CopyNewKeysToDatabase(DataTable newData)
+        {
+            try
+            {
+                SqlConnection destination = new SqlConnection(strConnectionForUpdates);
+                SqlCommand sqlDelete = new SqlCommand("DELETE FROM KeyValuationActual_destination WHERE [WFMTime#] IS NULL", destination);
+
+                destination.Open();
+
+                sqlDelete.ExecuteNonQuery();
+
+                //Create BulkCopy
+                SqlBulkCopy bulkData = new SqlBulkCopy(destination);
+
+                //Set destination table
+                bulkData.DestinationTableName = "KeyValuationActual_destination";
+
+                //Write Data
+                bulkData.WriteToServer(newData);
+
+                //Close Objects
+                bulkData.Close();
+
+                destination.Close();
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Copying exising data exception information! : {0}", ex);
+            }
+        }
+
         /// <summary>
         ///  After copying new rows to the temporary table, iterates NextQuery to run the next SQL query
         /// </summary>
-        private void QueryArray(int counter)
+        private void QueryArray()
         {
             try
             {

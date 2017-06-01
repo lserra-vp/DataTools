@@ -93,6 +93,7 @@
     <Content Include="img\button_wfm-genesys.png" />
     <Content Include="img\hourglass.svg" />
     <Content Include="img\voxpro-logo-dark-256x128.png" />
+    <Content Include="img\voxpro_data_logo.png" />
     <Content Include="mbr-additional.css" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -125,6 +126,7 @@
     <Content Include="WebForm1.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckAndAddValuationKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebForm1.aspx.cs">
       <DependentUpon>WebForm1.aspx</DependentUpon>
