@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm1.aspx.cs" Inherits="WebStart.WebForm1" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="default.aspx.cs" Inherits="WebStart.WebForm1" %>
 
 <!DOCTYPE html>
 
@@ -6,7 +6,7 @@
 <head runat="server">
     <title></title>
     <link href="styles.css" rel="stylesheet" />
-    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" /> -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
     <script type="text/javascript" src="Scripts/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -38,20 +38,6 @@
             
         });
 
-        /*function toggleCustomQuery() {
-            console.log("Custom SQL");
-
-            if (!queryVisible) {
-                queryVisible = true;
-                $("#UserSqlQuery").show();
-                $("#CustomSqlQueryBt").html("Hide Custom Query");
-            } else {
-                queryVisible = false;
-                $("#UserSqlQuery").hide();
-                $("#CustomSqlQueryBt").html("Show Custom Query");
-            }
-        };*/
-
     </script>
 </head>
 <body>
@@ -70,7 +56,7 @@
                 </ul>
             </div>
         </nav>
-
+        <div CssClass=""></div>
         <div class="container-fluid col-lg-12">
             <asp:Button ID="GenesysValuationsRequestBt" runat="server" Text="Get Valuations" CssClass="btn btn-sm btn-danger" OnClientClick="ShowProgress();"/>
             <asp:Button ID="GenesysCheckDuplicatesBt" runat="server" Text="Check Duplicates" CssClass="btn btn-sm btn-warning" OnClientClick="ShowProgress();"/>

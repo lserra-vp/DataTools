@@ -17,7 +17,7 @@ namespace WebStart
         
 
         /// <summary>
-        ///  
+        ///  Object constructor. Receives a DataSet and a String connection so that it can work on getting the missing keys for the new records
         /// </summary>
         public CheckAndAddValuationKeys(DataSet ds, String connection)
         {
@@ -28,21 +28,30 @@ namespace WebStart
         }
 
         /// <summary>
-        ///  
+        ///  Gets all the rows that have empty keys
         /// </summary>
         private void getRowsWithNoKeys()
         {
-            _dt = _ds.Tables[0];
+            if(_ds.Tables[0].Rows.Count != 0)
+            {
+                _dt = _ds.Tables[0];
 
-            //var rowsWithNoKeys = _dt.AsEnumerable().Where(x => x.Field<float?>("WFMTime#") == null);
-            var rowsWithNoKeys = _dt.Select("[WFMTime#] IS NULL");
+                var rowsWithNoKeys = _dt.Select("[WFMTime#] IS NULL");
 
-            _result = rowsWithNoKeys.CopyToDataTable<DataRow>();
+                _result = rowsWithNoKeys.CopyToDataTable<DataRow>();
+            }
+            else
+            {
+                var rowsWithNoKeys = _dt.Select("[WFMTime#] = -1");
+
+                _result = rowsWithNoKeys.CopyToDataTable<DataRow>();
+            }
 
         }
 
         /// <summary>
-        ///  Per row with no key, ask KeyValuationActual_destination for the 1st line that has all the other data
+        ///  Per row with no key, ask KeyValuationActual_destination for the 1st line that has all the other data.
+        ///  What it can't find, the keys are left blank
         /// </summary>
         public void getMissingKeys()
         {
@@ -109,7 +118,7 @@ namespace WebStart
         }
 
         /// <summary>
-        ///  
+        ///  Returns the rows with the keys matching.
         /// </summary>
         public DataTable getDataTable()
         {

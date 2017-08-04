@@ -30,14 +30,15 @@ namespace WebStart
 
         String strConnectionForUpdates = "Data Source=vpro-sql1;Initial Catalog=RE_INT_IE_DataQuality;Integrated Security=True;MultipleActiveResultSets=True";
 
-        BackgroundWorker bg = new BackgroundWorker();
+        DataBaseOperations dbOperations = new DataBaseOperations();
         DataSet ds;
         //DataSet duplicatesDataSet;
 
         int completion = 0;
         int query_counter = 0;
 
-        string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" };
+        //string[] sqlArray = new string[6] { "SELECT * FROM dqWFM_Valuation_Genesys", "SELECT * FROM dqWFM_Valuation_Impact360", "SELECT * FROM dqWFM_Valuation_Injixo", "SELECT * FROM dpState_Valuation_ICApp", "SELECT * FROM dqFiveNine_Phone_Valuation", "SELECT * FROM dqNFocus_Phone_Valuation" }; --OLD VALUATION QUERIES
+        string[] sqlArray = new string[6] { "SELECT * FROM Valuation_DQ_WFM_Genesys", "SELECT * FROM Valuation_DQ_WFM_Impact360", "SELECT * FROM Valuation_DQ_WFM_Injixo", "SELECT * FROM Valuation_DQ_State_ICApp", "SELECT * FROM Valuation_DQ_FiveNine_Phone", "SELECT * FROM Valuation_DQ_NFocus_Phone" };
 
         //String with testing tables - To be quicker
         //string[] sqlArray = new string[5] { "SELECT * FROM genesys_phone_source", "SELECT * FROM genesys_source", "SELECT * FROM icapp_source", "SELECT * FROM impact360_source", "SELECT * FROM injixo_source"};
@@ -361,9 +362,12 @@ namespace WebStart
         /// </summary>
         private void CopyExistingDatabase()
         {
+            dbOperations.TableBulkCopy(strConnectionMain, strConnectionForUpdates, "KeyValuationActual", "KeyValuationActual_destination");
+
+            /*
             try
             {
-                SqlConnection source = new SqlConnection(strConnectionForUpdates); //strConnectionForUpdatesstrConnectionMain
+                SqlConnection source = new SqlConnection(strConnectionMain); //strConnectionForUpdatesstrConnectionMain
                 SqlConnection destination = new SqlConnection(strConnectionForUpdates);
 
                 source.Open();
@@ -396,6 +400,7 @@ namespace WebStart
             {
                 Console.WriteLine("Copying exising data exception information! : {0}", ex);
             }
+            */
         }
 
         /// <summary>
@@ -403,6 +408,9 @@ namespace WebStart
         /// </summary>
         private void DeleteDataCopyTable()
         {
+            dbOperations.DeleteAllRows(strConnectionForUpdates, "KeyValuationActual_destination");
+            
+            /*
             try
             {
                 SqlConnection conn = new SqlConnection(strConnectionForUpdates);
@@ -417,6 +425,7 @@ namespace WebStart
             {
                 Console.WriteLine("Delete data from copy table exception information! : {0}", ex);
             }
+            */
         }
 
         private void CheckAndDeleteDuplicates()
@@ -449,6 +458,9 @@ namespace WebStart
 
         private int CountRowsThatMatchString(String match, String tableName, String columnName)
         {
+            return dbOperations.CountRows(strConnectionForUpdates, tableName, columnName, match);
+
+            /*
             SqlConnection conn = new SqlConnection(strConnectionForUpdates);
             SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = " + match, conn);
             SqlDataAdapter da = new SqlDataAdapter();
@@ -461,6 +473,7 @@ namespace WebStart
             conn.Close();
 
             return dt.Rows.Count;
+            */
         }
 
         /// <summary>
@@ -509,6 +522,9 @@ namespace WebStart
         /// </summary>
         private DataSet QueryFinalTable()
         {
+            return dbOperations.QueryDS(strConnectionForUpdates, "SELECT [ValuationID],[Post],[Location],[Department],[Role],[Language],[Work Group],[Shift],[Resource Utilisation Ref_ID],[Activity],[DataType],[SystemType], [Unique ID], [WFMTime#], [StateTime#], [ActualTime#], [WFMValuation#], [InvoiceValuation#], [ForecastTime#], [ForecastValuation#], [BillableValuationID] FROM KeyValuationActual_destination where [Unique ID] IS NULL");
+
+            /*
             SqlConnection conn = new SqlConnection(strConnectionForUpdates);
             SqlDataAdapter sqlDA = new SqlDataAdapter("SELECT [ValuationID],[Post],[Location],[Department],[Role],[Language],[Work Group],[Shift],[Resource Utilisation Ref_ID],[Activity],[DataType],[SystemType], [Unique ID], [WFMTime#], [StateTime#], [ActualTime#], [WFMValuation#], [InvoiceValuation#], [ForecastTime#], [ForecastValuation#], [BillableValuationID] FROM KeyValuationActual_destination where [Unique ID] IS NULL", conn);
 
@@ -521,6 +537,7 @@ namespace WebStart
             conn.Close();
 
             return ds;
+            */
         }
 
         /// <summary>
@@ -530,6 +547,9 @@ namespace WebStart
         {
             completion++;
 
+            dbOperations.TableBulkCopySQL(strConnectionForUpdates, strConnectionForUpdates, "KeyValuationActual_destination", sqlArray[counter]);
+
+            /*
             try
             {
                 SqlConnection source = new SqlConnection(strConnectionForUpdates);
@@ -567,6 +587,7 @@ namespace WebStart
             {
                 Console.WriteLine("Copying exising data exception information! : {0}", ex);
             }
+            */
         }
 
         public void CopyNewKeysToDatabase(DataTable newData)
@@ -623,10 +644,6 @@ namespace WebStart
 
         }
 
-        private void CompareAndGetMissingKeys()
-        {
-
-        }
 
         /// <summary>
         ///  Attempts to update the progress bar in the waiting window
